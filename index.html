@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stuart's Doubles Hyrox Training App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .goal-banner {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6c757d;
+            border: none;
+            background: none;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: white;
+        }
+      .content {
+            padding: 30px;
+        }
+
+        .week-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .week-btn {
+            padding: 12px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .week-btn:hover {
+            background: #f0f4ff;
+        }
+
+        .week-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .phase-info {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .phase-info h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .workout-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .workout-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .workout-card:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .workout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            cursor: pointer;
+            background: #f8f9fa;
+        }
+
+        .workout-header.rest {
+            background: #d4edda;
+        }
+
+        .workout-header.strength {
+            background: #fff3cd;
+        }
+
+        .workout-header.run {
+            background: #cfe2ff;
+        }
+
+        .workout-header.race {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+      .workout-left {
+            flex: 1;
+        }
+
+        .workout-day {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+
+        .workout-header.race .workout-day {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .workout-type {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .workout-focus {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .workout-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .complete-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .complete-btn.incomplete {
+            background: #667eea;
+            color: white;
+        }
+
+        .complete-btn.complete {
+            background: #28a745;
+            color: white;
+        }
+
+        .expand-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .workout-details {
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #e9ecef;
+            white-space: pre-line;
+            line-height: 1.6;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .stat-card p {
+            color: #495057;
+            line-height: 1.6;
+        }
+      .overview-section {
+            margin-bottom: 30px;
+        }
+
+        .overview-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+
+        .overview-section h3 {
+            color: #495057;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .overview-section p, .overview-section ul {
+            color: #6c757d;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .overview-section ul {
+            margin-left: 20px;
+        }
+
+        .overview-section li {
+            margin-bottom: 8px;
+        }
+
+        .progress-summary {
+            background: linear-gradient(135deg, #28a74515 0%, #20c99715 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #28a745;
+        }
+
+        .progress-summary h3 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .week-selector {
+                gap: 5px;
+            }
+
+            .week-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+
+            .workout-type {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 Stuart's Training Plan</h1>
+            <p>Doubles Hyrox with Tony - Sub 1:20:00 | Half Marathon Mar 1st</p>
+        </div>
+
+        <div class="goal-banner">
+            🎯 Half Marathon (Mar 1) → Doubles Hyrox (Mar 29) | 👥 Training with Tony
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('plan')">📅 Training Plan</button>
+            <button class="tab" onclick="switchTab('overview')">📋 Overview</button>
+            <button class="tab" onclick="switchTab('progress')">📊 Progress</button>
+        </div>
+
+        <div class="content">
+            <div id="plan-view">
+                <div class="week-selector" id="weekSelector"></div>
+                <div class="phase-info" id="phaseInfo"></div>
+                <div class="workout-grid" id="workoutGrid"></div>
+            </div>
+
+            <div id="overview-view" style="display: none;">
+                <div class="overview-section">
+                    <h2>Training Overview</h2>
+                    <p><strong>Athlete:</strong> Stuart (training with partner Tony)</p>
+                    <p><strong>Goals:</strong></p>
+                    <ul>
+                        <li>Half Marathon - March 1st, 2026</li>
+                        <li>Doubles Hyrox - March 29th, 2026 - Sub 1:20:00 (40:00 per athlete)</li>
+                    </ul>
+                    <p><strong>Training Start:</strong> Monday, December 8, 2025</p>
+                    
+                    <h3>Key Training Principles</h3>
+                    <ul>
+                        <li>Build running base for half marathon first (Weeks 1-8)</li>
+                        <li>Peak and taper for half marathon (Week 9)</li>
+                        <li>Brief recovery then ramp to Hyrox-specific work (Weeks 10-16)</li>
+                        <li>Doubles: Each athlete runs 1km, stations 1-4, 1km, stations 5-8</li>
+                        <li>Target: 40:00 per athlete = 20:00 per half</li>
+                        <li>Transitions with Tony are CRITICAL</li>
+                    </ul>
+
+                    <h3>Training Phases</h3>
+                    <ul>
+                        <li><strong>Phase 1 (Weeks 1-8):</strong> Half Marathon Base - Dec 8 - Feb 1</li>
+                        <li><strong>Phase 2 (Week 9):</strong> Half Marathon Taper & Race - Feb 2-8 (RACE: Feb 8)</li>
+                        <li><strong>Phase 3 (Weeks 10-13):</strong> Recovery & Hyrox Build - Feb 9 - Mar 8</li>
+                        <li><strong>Phase 4 (Weeks 14-15):</strong> Hyrox Peak - Mar 9-22</li>
+                        <li><strong>Phase 5 (Week 16):</strong> Taper & Race - Mar 23-29 (RACE: Mar 29)</li>
+                    </ul>
+
+                    <h3>Recovery Priorities</h3>
+                    <ul>
+                        <li>Sleep: 8-9 hours minimum</li>
+                        <li>Nutrition: High protein (2g/kg), adequate carbs on training days</li>
+                        <li>Hydration: 3-4L daily</li>
+                        <li>Mobility: Daily 10-15min routine</li>
+                    </ul>
+
+                    <h3>Partnership with Tony</h3>
+                    <ul>
+                        <li>Train together at least once weekly after half marathon</li>
+                        <li>Simulate full doubles in Weeks 13, 14, 15</li>
+                        <li>Practice transitions religiously</li>
+                        <li>Build trust and communication</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="progress-view" style="display: none;">
+                <div class="progress-summary">
+                    <h3>Overall Progress</h3>
+                    <p>Workouts Completed: <span id="completedCount">0</span> / <span id="totalCount">0</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>🏃 Half Marathon Goal</h3>
+                        <p>Date: March 1st, 2026</p>
+                        <p>Target: Sub 2:00:00</p>
+                        <p>Pace: 5:40/km average</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>🔥 Hyrox Goal</h3>
+                        <p>Date: March 29th, 2026</p>
+                        <p>Doubles with Tony</p>
+                        <p>Target: Sub 1:20:00 team</p>
+                        <p>Your split: ~40:00</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>💪 Strength Targets</h3>
+                        <p>Sled Push: 50m @ 152kg</p>
+                        <p>Wall Balls: 100 reps consistent</p>
+                        <p>Farmers: 200m @ 24kg/hand</p>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3>⏱️ Station Goals</h3>
+                        <p>SkiErg 1000m: Under 3:35</p>
+                        <p>Row 1000m: Under 3:35</p>
+                        <p>Each 1km run: 3:55-4:00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+      const programPhases = {
+            1: {phase:'Half Marathon Base',dates:'Dec 8-14',focus:'Foundation - aerobic base & strength',intensity:'Low-Moderate',notes:'Building aerobic capacity and strength foundation'},
+            2: {phase:'Half Marathon Base',dates:'Dec 15-21',focus:'Volume increase',intensity:'Moderate',notes:'Progressive overload, building endurance'},
+            3: {phase:'Half Marathon Base',dates:'Dec 22-28',focus:'Tempo work introduction',intensity:'Moderate',notes:'Adding threshold pace work'},
+            4: {phase:'Half Marathon Base',dates:'Dec 29-Jan 4',focus:'Building speed',intensity:'Moderate-High',notes:'Interval training introduced'},
+            5: {phase:'Half Marathon Base',dates:'Jan 5-11',focus:'Long run progression',intensity:'Moderate-High',notes:'Peak base volume building'},
+            6: {phase:'Half Marathon Base',dates:'Jan 12-18',focus:'Speed + endurance',intensity:'High',notes:'Combining speed work with distance'},
+            7: {phase:'Half Marathon Base',dates:'Jan 19-25',focus:'Peak volume',intensity:'High',notes:'Longest runs of half marathon prep'},
+            8: {phase:'Half Marathon Base',dates:'Jan 26-Feb 1',focus:'Pre-taper',intensity:'Moderate-High',notes:'Maintaining fitness, slight volume reduction'},
+            9: {phase:'Half Marathon Race',dates:'Feb 2-8',focus:'🏃 HALF MARATHON - Feb 8',intensity:'Taper',notes:'Race week - activation and taper'},
+            10: {phase:'Recovery & Transition',dates:'Feb 9-15',focus:'Post-race recovery',intensity:'Very Low',notes:'Recovery then transition to Hyrox training'},
+            11: {phase:'Hyrox Build',dates:'Feb 16-22',focus:'Hyrox introduction',intensity:'Moderate',notes:'First Hyrox-specific sessions'},
+            12: {phase:'Hyrox Build',dates:'Feb 23-Mar 1',focus:'Station work progression',intensity:'High',notes:'Building station strength and power'},
+            13: {phase:'Hyrox Build',dates:'Mar 2-8',focus:'Race pace + stations',intensity:'Very High',notes:'First full Hyrox simulation with Tony'},
+            14: {phase:'Hyrox Peak',dates:'Mar 9-15',focus:'Peak intensity',intensity:'Very High',notes:'Second doubles simulation, peak power'},
+            15: {phase:'Hyrox Peak',dates:'Mar 16-22',focus:'Final preparation',intensity:'High',notes:'Last heavy work, final doubles practice'},
+            16: {phase:'Hyrox Taper & Race',dates:'Mar 23-29',focus:'🔥 DOUBLES HYROX - Mar 29',intensity:'Taper',notes:'Taper week and race day'}
+        };
+      const stuartWeeklyPlans = {
+            1: [
+                {day:'Monday Dec 8',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)\n\n**Program starts this week!**\n**Target: Sub 2:00 Half Marathon (Mar 1)**'},
+                {day:'Tuesday Dec 9',type:'Strength',focus:'Lower Body Foundation',detail:'Squat, RDL, Split Squats',specifics:'Warm-up: 5min bike/row + dynamic leg swings + glute bridges 2x15\n\nMain Lifts:\n• Back Squat: 4x6 @ 75-80% 1RM, 3min rest\n• Romanian Deadlift: 3x8, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 16kg DBs, 90s rest\n• Core Circuit - 3 rounds:\n  - Hollow Hold: 30s\n  - Plank: 45s\n  - Russian Twists: 20 total\n\nCool-down: 5min walk + stretching'},
+                {day:'Wednesday Dec 10',type:'Run',focus:'Easy aerobic run',detail:'5km easy pace',specifics:'Warm-up: 10min walk/jog + dynamic drills\n\n**Main Run:** 5km @ 6:00-6:15/km\n• Zone 2 (conversational pace)\n• HR: 135-150 bpm\n• Focus: Relaxed breathing, good form\n\nCool-down: 5min walk\n\n**Notes:** Building aerobic base. Should feel comfortable throughout.'},
+                {day:'Thursday Dec 11',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light mobility work'},
+                {day:'Friday Dec 12',type:'Strength',focus:'Upper Body + Core',detail:'Bench, Pulls, Carries',specifics:'Warm-up: 5min row + band pull-aparts 2x15\n\nMain Lifts:\n• Bench Press: 4x6 @ 75%, 2min rest\n• Weighted Pull-ups: 4x5-8, 2min rest\n• DB Shoulder Press: 3x8, 90s rest\n• DB Bent Over Row: 3x10, 90s rest\n• Farmers Carry: 3x50m @ 20kg per hand\n\nCool-down: 5min stretch'},
+                {day:'Saturday Dec 13',type:'Long Run',focus:'Aerobic base building',detail:'10km easy pace',specifics:'**LONG RUN - Week 1**\n\nWarm-up: 10min easy jog\n\n**Main Run:** 10km @ 6:00-6:15/km\n• Zone 2 effort\n• HR: 135-150 bpm\n• Conversational pace\n• Focus on consistent rhythm\n\n**Finish:** 4x100m strides\n• Easy acceleration to 80%\n• Walk back recovery\n\nCool-down: 5-10min walk\n\n**Notes:** First long run - establishing baseline. Take it easy!'},
+                {day:'Sunday Dec 14',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'**Option A:** 30min easy bike or swim\n• Very low intensity (HR under 130)\n\n**Option B:** Complete rest\n\nHydrate well\nReflect on Week 1'}
+            ],
+        2: [
+                {day:'Monday Dec 15',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Dec 16',type:'Strength',focus:'Lower Body',detail:'Squat, RDL, Split Squats',specifics:'Warm-up: 5min bike/row + dynamics\n\nMain Lifts:\n• Back Squat: 4x6 @ 77% 1RM\n• Romanian Deadlift: 3x8 @ +2.5kg\n• Bulgarian Split Squat: 3x8 each @ 16kg DBs\n• Core Circuit - 3 rounds:\n  - Hollow Hold: 35s\n  - Plank: 50s\n  - Russian Twists: 25 total\n\nCool-down'},
+                {day:'Wednesday Dec 17',type:'Run',focus:'Easy aerobic + strides',detail:'6km easy pace',specifics:'Warm-up: 10min easy jog\n\n**Main Run:** 6km @ 6:00-6:15/km\n• Zone 2\n• HR: 135-150 bpm\n• 1km longer than Week 1\n\n**Finish:** 6x100m strides\n\nCool-down: 5min walk'},
+                {day:'Thursday Dec 18',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours'},
+                {day:'Friday Dec 19',type:'Strength',focus:'Upper Body + Core',detail:'Bench, Pulls, Carries',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x6 @ 77%\n• Weighted Pull-ups: 4x6-8 @ +2.5kg\n• DB Shoulder Press: 3x8 @ +2.5kg\n• DB Bent Over Row: 3x10 @ +2kg\n• Farmers Carry: 3x50m @ 22kg per hand\n\nCool-down'},
+                {day:'Saturday Dec 20',type:'Long Run',focus:'Aerobic progression',detail:'12km easy pace',specifics:'**LONG RUN - Week 2**\n\nWarm-up: 10min easy\n\n**Main Run:** 12km @ 5:55-6:10/km\n• Zone 2\n• HR: 135-150 bpm\n• 2km longer than Week 1\n• Stay comfortable\n\n**Finish:** 4x100m strides\n\nCool-down: 10min walk\n\n**Notes:** Progressive distance increase. Should still feel controlled.'},
+                {day:'Sunday Dec 21',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'30min easy bike/swim\nOR\nComplete rest\n\nHydrate\nPrepare for Week 3'}
+            ],
+        3: [
+                {day:'Monday Dec 22',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Dec 23',type:'Strength',focus:'Lower Body Power',detail:'Squat, RDL, Split Squats',specifics:'Warm-up: 5min bike/row + dynamics\n\nMain Lifts:\n• Back Squat: 4x6 @ 80% 1RM\n• Romanian Deadlift: 3x8 @ +2.5kg\n• Bulgarian Split Squat: 3x8 each @ 18kg DBs\n• Core Circuit - 3 rounds:\n  - Hollow Hold: 40s\n  - Plank: 55s\n  - Russian Twists: 30 total\n\nCool-down'},
+                {day:'Wednesday Dec 24',type:'Run',focus:'Tempo introduction',detail:'7km with tempo',specifics:'**CHRISTMAS EVE - Optional**\n\nWarm-up: 1.5km easy\n\n**Tempo:** 4km @ 5:30-5:40/km\n• Comfortably hard\n• HR: 160-170 bpm\n• "Controlled breathless"\n\nCool-down: 1.5km easy\n\n**Total:** 7km\n\n**Notes:** First tempo session. Should feel challenging but sustainable.'},
+                {day:'Thursday Dec 25',type:'Rest',focus:'Complete rest',detail:'CHRISTMAS DAY',specifics:'**MERRY CHRISTMAS! 🎄**\n\nComplete rest\nEnjoy time with family\nHydrate (water, not just eggnog!)\nRelax and recover'},
+                {day:'Friday Dec 26',type:'Strength',focus:'Upper Body',detail:'Bench, Pulls, Carries',specifics:'**BOXING DAY**\n\nWarm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x6 @ 80%\n• Weighted Pull-ups: 4x6-8 @ +5kg\n• DB Shoulder Press: 3x8 @ +2.5kg\n• DB Bent Over Row: 3x10 @ +2kg\n• Farmers Carry: 3x50m @ 24kg per hand\n\nCool-down'},
+                {day:'Saturday Dec 27',type:'Long Run',focus:'Distance progression',detail:'14km easy pace',specifics:'**LONG RUN - Week 3**\n\nWarm-up: 10min easy\n\n**Main Run:** 14km @ 5:50-6:05/km\n• Zone 2\n• HR: 135-152 bpm\n• Another 2km added\n• Stay relaxed\n\n**Finish:** 6x100m strides\n\nCool-down: 10min walk\n\n**Nutrition:** Consider water at 7km\n\n**Notes:** Building endurance steadily. Pace should feel comfortable.'},
+                {day:'Sunday Dec 28',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'30min easy activity\n• Bike, swim, or walk\n\nHydrate well\nReflect on 3 weeks done!'}
+            ],
+        4: [
+                {day:'Monday Dec 29',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Dec 30',type:'Strength',focus:'Lower Body',detail:'Squat, RDL, Split Squats',specifics:'**NEW YEAR\'S EVE EVE**\n\nWarm-up: 5min bike/row\n\nMain Lifts:\n• Back Squat: 4x6 @ 82% 1RM\n• Romanian Deadlift: 3x8 @ heavy\n• Bulgarian Split Squat: 3x8 each @ 18kg DBs\n• Core Circuit - 3 rounds:\n  - Hollow Hold: 45s\n  - Plank: 60s\n  - Russian Twists: 35 total\n\nCool-down'},
+                {day:'Wednesday Dec 31',type:'Run',focus:'Tempo run',detail:'7km with tempo',specifics:'**NEW YEAR\'S EVE**\n\nWarm-up: 1.5km easy\n\n**Tempo:** 4km @ 5:25-5:35/km\n• Slightly faster than Week 3\n• HR: 162-172 bpm\n\nCool-down: 1.5km easy\n\n**Total:** 7km\n\nEnjoy NYE celebrations responsibly!'},
+                {day:'Thursday Jan 1',type:'Rest',focus:'Complete rest',detail:'NEW YEAR\'S DAY',specifics:'**HAPPY NEW YEAR! 🎉**\n\nComplete rest\nHydration: 3L+ water\nSleep: 8+ hours\nNew year, strong commitment!'},
+                {day:'Friday Jan 2',type:'Strength',focus:'Upper Body',detail:'Bench, Pulls, Carries',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x6 @ 82%\n• Weighted Pull-ups: 4x7-8 @ +5kg\n• DB Shoulder Press: 3x8 @ heavy\n• DB Bent Over Row: 3x10 @ heavy\n• Farmers Carry: 3x50m @ 26kg per hand\n\nCool-down'},
+                {day:'Saturday Jan 3',type:'Long Run',focus:'Consolidation',detail:'14km easy pace',specifics:'**LONG RUN - Week 4**\n\nWarm-up: 10min easy\n\n**Main Run:** 14km @ 5:45-6:00/km\n• Zone 2\n• HR: 135-150 bpm\n• Same distance as Week 3\n• Should feel slightly easier\n\n**Finish:** 6x100m strides\n\nCool-down: 10min walk\n\n**Notes:** Consolidating 14km before next progression.'},
+                {day:'Sunday Jan 4',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'30min easy bike/swim\nOR\nComplete rest\n\n**First month complete! 💪**\nStrong foundation built'}
+            ],
+        5: [
+                {day:'Monday Jan 5',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\n\n**Building toward half marathon**'},
+                {day:'Tuesday Jan 6',type:'Strength',focus:'Lower Body Power',detail:'Squat, RDL, Lunges',specifics:'Warm-up: 5min bike/row + dynamics\n\nMain Lifts:\n• Back Squat: 4x5 @ 84% 1RM\n• Romanian Deadlift: 3x6 @ heavy\n• Walking Lunges: 3x20m @ 16kg DBs\n• Core Circuit - 3 rounds:\n  - Hollow Hold: 50s\n  - Plank: 60s\n  - Russian Twists: 40 total\n\nCool-down'},
+                {day:'Wednesday Jan 7',type:'Run',focus:'Interval training',detail:'8km with intervals',specifics:'Warm-up: 2km easy + drills\n\n**Main Set:** 6x800m @ 5:10-5:20/km\n• 90s recovery jog between reps\n• HR: 165-178 bpm during reps\n• Focus on consistent pacing\n\nCool-down: 1.5km easy\n\n**Total:** ~8km\n\n**Notes:** First interval session. Building speed endurance for half marathon.'},
+                {day:'Thursday Jan 8',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours\nBody adapting to intervals'},
+                {day:'Friday Jan 9',type:'Strength',focus:'Upper Body',detail:'Bench, Pulls, Carries',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x5 @ 84%\n• Weighted Pull-ups: 4x8 @ +7kg\n• DB Shoulder Press: 3x8\n• DB Bent Over Row: 3x10\n• Farmers Carry: 3x60m @ 26kg per hand\n\nCool-down\n\n**Notes:** Keep it efficient - doubles practice tomorrow with Tony!'},
+                {day:'Sat Jan 10',sessionType:'🤝 DOUBLES SESSION #1',duration:'90-120 mins',intensity:'75% Race Effort',combinedSession:true,notes:'FIRST DOUBLES! Learning mode @ 75% effort.\n\nWarmup: 15min jog + dynamic stretching together\n\nFull 8-station simulation:\n• SkiErg 1000m: You 600m (2:30-2:35), Partner 400m (1:40-1:45)\n• Run 1km each @ 5:30/km\n• Sled Push 50m: Partner 30m, You 20m\n• Run 1km each @ 5:30/km\n• Sled Pull 50m: You 25m, Partner 25m\n• Run 1km each @ 5:30/km\n• Burpee BJ 80m: Split 40m each\n• Run 1km each @ 5:30/km\n• Row 1000m: You 600m (2:20-2:25), Partner 400m\n• Run 1km each @ 5:30/km\n• Farmers 200m: Partner 120m, You 80m\n• Run 1km each @ 5:30/km\n• Sandbag Lunges 100m: Split 50m each\n• Run 1km each @ 5:30/km\n• Wall Balls 100: Split 50 each\n\n15-20min debrief: What worked? What needs work? Record ALL times.'},
+                {day:'Sunday Jan 11',type:'Long Run',focus:'Distance increase',detail:'16km easy pace',specifics:'**LONG RUN - Week 5**\n**DISTANCE INCREASE**\n\nWarm-up: 10min easy\n\n**Main Run:** 16km @ 5:50-6:05/km\n• Zone 2\n• HR: 135-152 bpm\n• 2km added from last peak\n• Stay patient with pace\n\n**Finish:** 6x100m strides\n\nCool-down: 10min walk\n\n**Nutrition:** Water at 5km and 11km\n\n**Notes:** Building towards half marathon distance. Recovery from yesterday\'s doubles practice.'}
+            ],
+        6: [
+                {day:'Monday Jan 12',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Jan 13',type:'Strength',focus:'Lower Body',detail:'Squat, RDL, Lunges',specifics:'Warm-up: 5min bike/row + dynamics\n\nMain Lifts:\n• Back Squat: 4x5 @ 85% 1RM\n• Romanian Deadlift: 3x6 @ +2.5kg\n• Walking Lunges: 3x20m @ 18kg DBs\n• Core Circuit - 3 rounds:\n  - Hollow Hold: 55s\n  - Plank: 60s\n  - Russian Twists: 45 total\n\nCool-down'},
+                {day:'Wednesday Jan 14',type:'Run',focus:'Interval training',detail:'9km with intervals',specifics:'Warm-up: 2km easy + drills\n\n**Main Set:** 6x800m @ 5:05-5:15/km\n• 90s recovery jog\n• Slightly faster than Week 5\n• HR: 168-180 bpm\n\nCool-down: 1.5km easy\n\n**Total:** ~9km'},
+                {day:'Thursday Jan 15',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours'},
+                {day:'Friday Jan 16',type:'Strength',focus:'Upper Body',detail:'Bench, Pulls, Carries',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x5 @ 85%\n• Weighted Pull-ups: 4x8 @ +8kg\n• DB Shoulder Press: 3x8 @ +2.5kg\n• DB Bent Over Row: 3x10 @ +2kg\n• Farmers Carry: 3x60m @ 28kg per hand\n\nCool-down'},
+                {day:'Saturday Jan 17',type:'Long Run',focus:'Building endurance',detail:'18km easy pace',specifics:'**LONG RUN - Week 6**\n**BIG PROGRESSION**\n\nWarm-up: 10min easy\n\n**Main Run:** 18km @ 5:50-6:05/km\n• Zone 2\n• HR: 135-152 bpm\n• Getting close to race distance!\n• Stay comfortable\n\n**Finish:** 6x100m strides\n\nCool-down: 10min walk\n\n**Nutrition:**\n• Water at 6km, 12km\n• Consider gel at 9km\n\n**Notes:** This is 18km of your 21km race. Building confidence!'},
+                {day:'Sunday Jan 18',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'30min easy bike/swim\nOR\nComplete rest\n\nBig week done! 💪\nRecover well'}
+            ],
+      7: [
+                {day:'Monday Jan 19',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Jan 20',type:'Strength',focus:'Lower Body Peak',detail:'Squat, RDL, Lunges',specifics:'Warm-up: 5min bike/row + dynamics\n\nMain Lifts:\n• Back Squat: 4x5 @ 87% 1RM\n• Romanian Deadlift: 3x6 @ peak weight\n• Walking Lunges: 3x25m @ 18kg DBs\n• Core Circuit - 3 rounds:\n  - Hollow Hold: 60s\n  - Plank: 75s\n  - Russian Twists: 50 total\n\nCool-down'},
+                {day:'Wednesday Jan 21',type:'Run',focus:'Interval + tempo',detail:'10km mixed pace',specifics:'Warm-up: 2km easy + drills\n\n**Main Set:** 5x1km @ 5:00-5:10/km\n• 90s recovery jog\n• Longer intervals than before\n• HR: 168-180 bpm\n\nCool-down: 1.5km easy\n\n**Total:** ~10km\n\n**Notes:** Building race pace endurance with 1km repeats.'},
+                {day:'Thursday Jan 22',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours\nPrepare for doubles practice Saturday'},
+                {day:'Friday Jan 23',type:'Strength',focus:'Upper Body',detail:'Bench, Pulls, Carries',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x5 @ 87%\n• Weighted Pull-ups: 4x8 @ +10kg\n• DB Shoulder Press: 3x8\n• DB Bent Over Row: 3x10\n• Farmers Carry: 3x75m @ 28kg per hand\n\nCool-down\n\n**Notes:** Solid session but save energy for tomorrow\'s doubles!'},
+                {day:'Sat Jan 24',sessionType:'🤝 DOUBLES SESSION #2',duration:'90-120 mins',intensity:'85% Race Effort',combinedSession:true,notes:'SECOND DOUBLES! 85% effort - refining handovers.\n\nAll stations faster than Week 4:\n• SkiErg: You 600m (2:25-2:30), Partner 400m (1:35-1:40) = 4:00-4:10\n• Runs @ 5:25/km (faster)\n• Sled Push: Partner 30m (1:30-1:35), You 20m (1:00-1:05) = 2:30-2:40\n• Sled Pull: 25m each (1:45-1:50) = 3:30-3:40\n• Burpee BJ: 40m each (2:35-2:45) = 5:10-5:30\n• Row: You 600m (2:15-2:20), Partner 400m (1:32-1:37) = 3:47-3:57\n• Farmers: Partner 120m (1:12-1:17), You 80m (48-53s) = 2:00-2:10\n• Lunges: 50m each (2:20-2:30) = 4:40-5:00\n• Wall Balls: 50 each (3:05-3:15) = 6:10-6:30\n\nDebrief: Improvements? Strategy adjustments?'},
+                {day:'Sunday Jan 25',type:'Recovery',focus:'Complete rest',detail:'Full recovery',specifics:'**COMPLETE REST**\n\nYou earned it after doubles practice yesterday!\n\nHydration: 4L water\nSleep: 9+ hours\nNutrition: Protein + carbs\nOptional: Massage, stretch\n\n**Two doubles sessions complete! 💪**'}
+            ],
+        8: [
+                {day:'Monday Jan 26',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\n\n**PRE-TAPER WEEK**\nSlightly reduced volume\n\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Jan 27',type:'Strength',focus:'Moderate volume',detail:'Squat, RDL, Lunges',specifics:'Warm-up: 5min bike/row\n\nMain Lifts:\n• Back Squat: 3x5 @ 82% 1RM (reduced volume)\n• Romanian Deadlift: 3x6 @ moderate\n• Walking Lunges: 3x20m @ 16kg DBs\n• Core Circuit - 2 rounds:\n  - Hollow Hold: 45s\n  - Plank: 60s\n  - Russian Twists: 30 total\n\nCool-down'},
+                {day:'Wednesday Jan 28',type:'Run',focus:'Tempo run',detail:'8km with tempo',specifics:'Warm-up: 1.5km easy\n\n**Tempo:** 5km @ 5:35-5:45/km\n• Half marathon goal pace\n• HR: 158-168 bpm\n• Practice race pace feel\n\nCool-down: 1.5km easy\n\n**Total:** 8km\n\n**Notes:** Getting comfortable at goal pace.'},
+                {day:'Thursday Jan 29',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours'},
+                {day:'Friday Jan 30',type:'Strength',focus:'Upper Body Light',detail:'Bench, Pulls, Carries',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 3x5 @ 80% (lighter)\n• Pull-ups: 3x10 bodyweight\n• DB Shoulder Press: 3x8 @ moderate\n• DB Bent Over Row: 3x10 @ moderate\n• Farmers Carry: 3x50m @ 24kg per hand\n\nCool-down'},
+                {day:'Saturday Jan 31',type:'Long Run',focus:'Reduced volume',detail:'16km easy pace',specifics:'**LONG RUN - Week 8**\n**PRE-TAPER**\n\nWarm-up: 10min easy\n\n**Main Run:** 16km @ 5:45-6:00/km\n• Zone 2\n• HR: 135-148 bpm\n• Reduced from 20km\n• Should feel fresh and strong\n\n**Finish:** 6x100m strides\n\nCool-down: 10min walk\n\n**Notes:** Volume coming down. Body preparing for taper and race.'},
+                {day:'Sunday Feb 1',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'20-30min easy bike/swim\nOR\nComplete rest\n\n**Race week next! 💪**\nPrepare mentally for half marathon'}
+            ],
+       9: [
+                {day:'Monday Feb 2',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\n\n**HALF MARATHON SPECIFIC PHASE**\nWeeks 9-11: Race pace work\nRace: SUNDAY March 1st\n\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Feb 3',type:'Strength',focus:'Maintenance strength',detail:'Moderate volume',specifics:'Warm-up: 5min bike/row\n\nMain Lifts:\n• Back Squat: 3x5 @ 80% 1RM\n• Romanian Deadlift: 3x6\n• Walking Lunges: 3x20m @ 16kg DBs\n• Core Circuit - 2 rounds:\n  - Hollow Hold: 45s\n  - Plank: 60s\n\nCool-down\n\n**Notes:** Strength maintenance only - running is priority now'},
+                {day:'Wednesday Feb 4',type:'Run',focus:'Race pace intervals',detail:'10km with race pace',specifics:'Warm-up: 2km easy + drills\n\n**Main Set:** 4x2km @ 5:40/km (HALF MARATHON PACE)\n• 90s recovery jog\n• HR: 165-175 bpm\n• Practice goal race pace\n• Focus on rhythm and breathing\n\nCool-down: 1.5km easy\n\n**Total:** ~10km\n\n**Notes:** This IS your race pace. Get comfortable with it!'},
+                {day:'Thursday Feb 5',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours\nHard workout yesterday - recover well'},
+                {day:'Friday Feb 6',type:'Strength',focus:'Upper body light',detail:'Maintenance only',specifics:'Warm-up: 5min row\n\n**LIGHT SESSION:**\n• Bench Press: 3x5 @ 75%\n• Pull-ups: 3x8 bodyweight\n• DB Shoulder Press: 3x8 moderate\n• Core: 2 rounds light\n\nCool-down\n\n**Total:** 30min max\n\n**Notes:** Doubles practice tomorrow!'},
+                 {day:'Sat Feb 7',sessionType:'🤝 DOUBLES SESSION #3',duration:'90-120 mins',intensity:'90% Race Effort',combinedSession:true,notes:'THIRD DOUBLES! 90% race effort - near race pace.\n\nRace effort splits:\n• SkiErg: You 600m (2:20-2:25), Partner 400m (1:32-1:37) = 3:52-4:02\n• Runs @ 5:20/km (RACE PACE)\n• Sled Push: Partner 30m (1:28-1:33), You 20m (58-63s) = 2:26-2:36\n• Sled Pull: 25m each (1:42-1:47) = 3:24-3:34\n• Burpee BJ: 40m each (2:30-2:40) = 5:00-5:20\n• Row: You 600m (2:12-2:17), Partner 400m (1:30-1:35) = 3:42-3:52\n• Farmers: Partner 120m (1:10-1:15), You 80m (46-51s) = 1:56-2:06\n• Lunges: 50m each (2:18-2:28) = 4:36-4:56\n• Wall Balls: 50 each (3:00-3:10) = 6:00-6:20\n\nDebrief: Race readiness? Confidence? Projected time?'},
+                {day:'Sunday Feb 8',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'20-30min easy bike/swim\nOR\nComplete rest\n\nHydrate\nRecover well\n\n**4 weeks to half marathon!**\n**One more doubles before taper!**'}
+            ],
+        10: [
+                {day:'Monday Feb 9',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\n\n**Final build week before taper**\n**3 weeks to race!**'},
+                {day:'Tuesday Feb 10',type:'Strength',focus:'Maintenance strength',detail:'Moderate volume',specifics:'Warm-up: 5min bike/row\n\nMain Lifts:\n• Back Squat: 3x5 @ 82% 1RM\n• Romanian Deadlift: 3x6 @ +2.5kg\n• Walking Lunges: 3x20m @ 18kg DBs\n• Core Circuit - 2 rounds:\n  - Hollow Hold: 50s\n  - Plank: 60s\n\nCool-down'},
+                {day:'Wednesday Feb 11',type:'Run',focus:'Tempo run',detail:'10km tempo',specifics:'Warm-up: 2km easy + drills\n\n**Tempo:** 6km @ 5:30-5:40/km\n• Just slightly faster than race pace\n• HR: 165-175 bpm\n• Building speed endurance\n• Comfortably hard\n\nCool-down: 2km easy\n\n**Total:** 10km\n\n**Notes:** Last hard tempo before taper. Push but stay controlled.'},
+                {day:'Thursday Feb 12',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours'},
+                {day:'Friday Feb 13',type:'Strength',focus:'Upper body light',detail:'Maintenance only',specifics:'Warm-up: 5min row\n\n**LIGHT SESSION:**\n• Bench Press: 3x5 @ 77%\n• Pull-ups: 3x10 bodyweight\n• DB Shoulder Press: 3x8\n• Core: 2 rounds\n\nCool-down\n\n**Total:** 30min max'},
+                {day:'Saturday Feb 14',type:'Long Run',focus:'PEAK LONG RUN',detail:'20km easy pace',specifics:'**LONG RUN - Week 10**\n**🎯 PEAK LONG RUN FOR HALF MARATHON 🎯**\n**VALENTINE\'S DAY 💪❤️**\n\nWarm-up: 10min easy\n\n**Main Run:** 20km @ 5:50-6:00/km\n• Zone 2\n• HR: 138-150 bpm\n• Just 1.1km shy of race distance\n• Build confidence\n• Stay relaxed and controlled\n\n**Finish:** 4x100m strides\n\nCool-down: 10min walk\n\n**Nutrition Plan:**\n• Water at 6km, 12km, 16km\n• Gel at 10km\n• Test race nutrition strategy\n\n**Notes:** This is your longest run before the half marathon. The race day adrenaline + taper will carry you the final 1.1km easily!'},
+                {day:'Sunday Feb 15',type:'Recovery',focus:'Complete rest',detail:'Full recovery',specifics:'**COMPLETE REST**\n\nYou just did 20km!\n\nHydration: 4L water\nSleep: 9+ hours\nNutrition: Protein + carbs\nOptional: Massage, stretching\n\nPeak week complete! 💪'}
+            ],
+    11: [
+                {day:'Monday Feb 16',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\n\n**TAPER BEGINS!**\n2 weeks to half marathon\n\nHydration: 3L water\nSleep: 8+ hours\nVisualize race success'},
+                {day:'Tuesday Feb 17',type:'Strength',focus:'Light maintenance',detail:'Reduced volume',specifics:'Warm-up: 5min bike/row\n\n**LIGHT MAINTENANCE:**\n• Back Squat: 3x3 @ 75% 1RM (light)\n• Romanian Deadlift: 2x6 @ moderate\n• Core Circuit - 2 rounds light\n\nCool-down\n\n**Total:** 25min max\n\n**Notes:** Just maintaining movement patterns. No fatigue.'},
+                {day:'Wednesday Feb 18',type:'Run',focus:'Race pace practice',detail:'8km with race pace',specifics:'Warm-up: 2km easy + drills\n\n**Main Set:** 3x1.5km @ 5:35-5:40/km (race pace)\n• 2min recovery jog\n• HR: 165-175 bpm\n• Feeling race pace\n• Stay controlled\n\nCool-down: 1.5km easy\n\n**Total:** ~8km\n\n**Notes:** Quality over quantity. Legs should feel fresh.'},
+                {day:'Thursday Feb 19',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest\nHydration: 3L+\nSleep: 8+ hours'},
+                {day:'Friday Feb 20',type:'Strength',focus:'Very light',detail:'Activation only',specifics:'**ACTIVATION ONLY:**\n\n• Light bike: 10min\n• Bodyweight squats: 2x10\n• Core: 1 round easy\n• Stretch thoroughly\n\n**Total:** 15min max\n\n**Notes:** Just movement, no work. Doubles practice tomorrow!'},
+                {day:'Sat Feb 21',sessionType:'🤝 DOUBLES SESSION #4 - FINAL',duration:'90-120 mins',intensity:'90% Race Effort',combinedSession:true,notes:'FINAL DOUBLES PRACTICE! Dial in exact race plan.\n\nRace rehearsal @ 90%:\n• SkiErg: You 600m (2:20-2:25), Partner 400m (1:32-1:37) = 3:52-4:02\n• Runs @ 5:20/km\n• Sled Push: Partner 30m (1:28-1:33), You 20m (58-63s) = 2:26-2:36\n• Sled Pull: 25m each (1:42-1:47) = 3:24-3:34\n• Burpee BJ: 40m each (2:30-2:40) = 5:00-5:20\n• Row: You 600m (2:12-2:17), Partner 400m (1:30-1:35) = 3:42-3:52\n• Farmers: Partner 120m (1:10-1:15), You 80m (46-51s) = 1:56-2:06\n• Lunges: 50m each (2:18-2:28) = 4:36-4:56\n• Wall Balls: 50 each (3:00-3:10) = 6:00-6:20\n\nNO EXPERIMENTS. Confirm everything. Next time is RACE DAY!\n\n20min debrief: Final strategy, nutrition plan, race logistics, confidence check.'},
+                {day:'Sunday Feb 22',type:'Recovery',focus:'Complete rest',detail:'Full recovery',specifics:'**COMPLETE REST**\n\nRace week starts tomorrow!\n\nHydration: 3L+ water\nSleep: 8+ hours\nMeal prep for week\nMental preparation\n\n**One week to half marathon! 💪**\n**Four doubles sessions complete!**'}
+            ],
+        12: [
+                {day:'Monday Feb 23',type:'Rest',focus:'Complete rest',detail:'RACE WEEK BEGINS',specifics:'**🏃 RACE WEEK! 🏃**\n**Half Marathon: SUNDAY March 1st**\n\nComplete rest day\nHydration: 3L+ water\nSleep: 8+ hours\nVisualize race success\nReview race plan\n\n**Target: Sub 2:00:00**'},
+                {day:'Tuesday Feb 24',type:'Run',focus:'Easy shakeout',detail:'5km easy + strides',specifics:'**Easy Shakeout Run**\n\nWarm-up: 5min walk\n\n**Main:** 5km @ 6:15-6:30/km\n• Very easy\n• HR: 130-140 bpm\n• Just keeping legs moving\n\n**Finish:** 4x100m strides\n• 80% effort\n• Practice race pace feel\n\nCool-down: 5min walk\n\n**Total:** 25min max'},
+                {day:'Wednesday Feb 25',type:'Strength',focus:'Light activation',detail:'Movement only',specifics:'**LIGHT ACTIVATION ONLY**\n\nWarm-up: 5min bike\n\n• Bodyweight Squat: 3x5 (movement only)\n• Light core: 1 round easy\n• Stretch thoroughly\n\n**Total:** 15min max\n\n**Notes:** Just maintaining feel. No work, no fatigue.'},
+                {day:'Thursday Feb 26',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'**COMPLETE REST**\n\nHydration: 4L water\nSleep: 9+ hours\nNutrition: Good carbs + protein\nStay off feet\n\n**4 days to race!**'},
+                {day:'Friday Feb 27',type:'Run',focus:'Final shakeout',detail:'3km + strides',specifics:'**Final Shakeout**\n\n**Morning run:**\n• 3km @ 6:30/km very easy\n• HR: 125-135 bpm\n• 6x100m strides feeling race pace\n\n**Total:** 15min\n\n**Notes:** Last run before race. Feel your legs, feel race pace, then rest.'},
+                {day:'Saturday Feb 28',type:'Rest',focus:'Complete rest',detail:'DAY BEFORE RACE',specifics:'**DAY BEFORE RACE**\n\n**COMPLETE REST**\n\nMorning:\n• Light 10min walk ONLY\n• Stay off feet otherwise\n\nNutrition:\n• Carb load all day\n• Familiar foods only\n• Hydrate consistently\n• Avoid fiber/dairy if sensitive\n\nEvening:\n• Early dinner (6pm)\n• Lay out ALL race gear:\n  - Race bib + pins\n  - Running shoes (tested)\n  - Race outfit (tested)\n  - Watch/GPS\n  - Gels + water\n• Set 2-3 alarms\n• Bed by 9pm\n\n**Weather check**\n**Route review**\n\n**YOU ARE READY! 💪**'},
+                {day:'Sunday Mar 1',type:'RACE',focus:'🏃 HALF MARATHON 🏃',detail:'RACE DAY!',specifics:'**🎯 HALF MARATHON RACE DAY 🎯**\n**TARGET: SUB 2:00:00**\n**PACE: 5:40/km average**\n\n**3 Hours Before:**\n• Wake up (5:30am for 8:30am start)\n• Bathroom routine\n• Breakfast: Oatmeal + banana + honey + coffee/tea\n• Sip water (don\'t overdo it)\n• Stay relaxed\n\n**90min Before:**\n• Arrive at venue (7:00am)\n• Collect bib if needed\n• Bathroom again\n• Light dynamic stretches\n• Stay warm\n\n**30min Before:**\n• Progressive warm-up jog: 1.5-2km\n• Dynamic drills (leg swings, high knees, butt kicks)\n• 4-6x100m strides building to race pace\n• Final bathroom stop\n• Find start corral position\n• Stay loose, stay warm\n\n**RACE STRATEGY:**\n\n**Km 1-5:** 5:45-5:50/km\n• Start controlled - DON\'T go out too fast\n• Let the crowd settle\n• HR: 155-165 bpm\n• Feel relaxed, comfortable\n\n**Km 6-10:** 5:35-5:40/km\n• Settle into goal race pace\n• Find your rhythm\n• HR: 162-172 bpm\n• Breathing controlled\n• Feel strong\n\n**Km 11-15:** 5:35-5:40/km\n• Maintain pace and form\n• Mental toughness zone\n• HR: 165-175 bpm\n• Stay focused, stay strong\n• Take gel around Km 12-13\n\n**Km 16-21.1:** 5:25-5:35/km\n• TIME TO PUSH\n• Give everything you have\n• HR: 170-180+ bpm\n• This is what you trained for\n• Last 2km - EMPTY THE TANK\n• Sprint finish!\n\n**FUELING PLAN:**\n• Water at every aid station (small sips)\n• Gel at Km 7\n• Gel at Km 14\n• Water with each gel\n• Skip aid stations if feeling good\n\n**MENTAL GAME:**\n• You\'ve done 20km in training\n• Trust your training\n• One kilometer at a time\n• When it hurts, everyone else hurts too\n• Stay present, stay positive\n• YOU\'VE GOT THIS\n\n**PACING TARGET:**\n• 10km split: ~56:30\n• 15km split: ~1:25:00\n• Finish: Sub 2:00:00\n\n**Post-Race:**\n• Keep walking 5-10min (don\'t stop immediately)\n• Collect medal 🏅\n• Stretch gently\n• Carbs + protein within 30min\n• Hydrate well\n• Ice bath if available\n• CELEBRATE YOUR ACHIEVEMENT! 🎉\n\n**Recovery This Week:**\n• Mon-Thu: Complete rest\n• Fri onwards: Light return to training\n• Transition to Hyrox prep begins Week 13\n\n**BELIEVE IN YOURSELF! 💪🔥**\n**YOU ARE READY!**'}
+            ],
+        13: [
+                {day:'Monday Mar 2',type:'Rest',focus:'Complete rest',detail:'POST-RACE RECOVERY',specifics:'**POST-RACE RECOVERY DAY 1**\n\n**COMPLETE REST**\n\nYou just ran a half marathon!\n\nHydration: 4L+ water\nSleep: 9+ hours\nNutrition: Protein + carbs for recovery\nOptional: Ice bath, compression, gentle stretching\n\nReflect on your race:\n• What went well?\n• What did you learn?\n• Celebrate your achievement! 🏅\n\n**No training this week - recovery priority**'},
+                {day:'Tuesday Mar 3',type:'Rest',focus:'Complete rest',detail:'POST-RACE RECOVERY',specifics:'**POST-RACE RECOVERY DAY 2**\n\n**COMPLETE REST**\n\nHydration: 4L water\nSleep: 8+ hours\nLight walking OK (10-15min max)\nGentle stretching if needed\n\n**Notes:** Your body is repairing. Let it happen.'},
+                {day:'Wednesday Mar 4',type:'Rest',focus:'Complete rest',detail:'POST-RACE RECOVERY',specifics:'**POST-RACE RECOVERY DAY 3**\n\n**COMPLETE REST**\n\nHydration: 3-4L water\nSleep: 8+ hours\nLight walking OK (15-20min max)\nGentle mobility work\n\n**Notes:** Still in recovery mode. Be patient.'},
+                {day:'Thursday Mar 5',type:'Rest',focus:'Complete rest',detail:'POST-RACE RECOVERY',specifics:'**POST-RACE RECOVERY DAY 4**\n\n**COMPLETE REST**\n\nHydration: 3L+ water\nSleep: 8+ hours\nLight activity OK if feeling good\n\n**Start planning Hyrox transition**\n**Connect with Tony about training schedule**'},
+                {day:'Friday Mar 6',type:'Recovery',focus:'Light return',detail:'Easy movement',specifics:'**FIRST RETURN TO MOVEMENT**\n\n**Option A:** 20min easy bike\n• Very low intensity\n• HR under 130 bpm\n• Just moving blood\n\n**Option B:** 15min easy swim\n• Gentle strokes\n• No intensity\n\nOR\n\n**Option C:** 2km very easy jog\n• 7:00/km pace\n• HR under 135 bpm\n• Stop if anything hurts\n\n**Notes:** Testing the waters. Listen to your body.'},
+                {day:'Saturday Mar 7',type:'Recovery',focus:'Light run',detail:'Easy 4km',specifics:'**LIGHT RETURN RUN**\n\nWarm-up: 5min walk\n\n**Main:** 4km @ 6:30-6:45/km\n• Very easy pace\n• HR: 130-140 bpm\n• Legs should feel OK\n• No pain = good sign\n\nCool-down: 5min walk\n\n**Notes:** Just shaking out the legs. No intensity whatsoever.'},
+                {day:'Sunday Mar 8',type:'Recovery',focus:'Active recovery',detail:'Easy movement',specifics:'**RECOVERY WEEK COMPLETE**\n\n20-30min easy activity:\n• Bike, swim, or easy jog\n• Very low intensity\n\nOR complete rest\n\n**NEXT WEEK: Hyrox training begins!**\n**Meet with Tony to plan doubles strategy**\n\n**4 weeks to Hyrox! 💪**'}
+            ],
+       14: [
+                {day:'Monday Mar 9',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\n\n**🔥 HYROX PHASE BEGINS! 🔥**\nWeeks 14-15: Peak intensity\nRace: Sunday March 29th\nDoubles with Tony - Sub 1:20:00\n\nHydration: 3L water\nSleep: 8+ hours'},
+                {day:'Tuesday Mar 10',type:'Strength',focus:'Explosive Power',detail:'Heavy sled + power work',specifics:'Warm-up: 5min bike/row + dynamics\n\n**EXPLOSIVE HYROX-SPECIFIC POWER**\n\nMain Lifts:\n• Back Squat: 4x3 @ 85% 1RM (speed focus)\n• Box Jumps: 5x5 @ 60cm (explosive)\n• Sled Push: 6x50m @ 152kg (RACE WEIGHT), 2min rest\n• Sled Pull: 5x50m @ 103kg (RACE WEIGHT), 2min rest\n• Wall Balls: 5x30 @ 9kg (race pace), 90s rest\n• Core: 3x1min plank variations\n\nCool-down: 10min stretch\n\n**Notes:** This is race-weight equipment. Getting specific now!'},
+                {day:'Wednesday Mar 11',type:'Hyrox Run',focus:'Race pace running',detail:'Intervals at goal pace',specifics:'Warm-up: 2km easy + drills\n\n**HYROX RACE PACE INTERVALS**\n**Main Set:** 8x1km @ 3:55-4:00/km (RACE PACE!)\n• 90s recovery jog between reps\n• HR: 168-180 bpm during reps\n• This is YOUR pace for race day\n• Each 1km must feel controlled\n\nCool-down: 1.5km easy\n\n**Total:** ~12km\n\n**Notes:** Much faster than half marathon pace. Building speed for Hyrox.'},
+                {day:'Thursday Mar 12',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'**COMPLETE REST**\n\nHard training week!\n\nHydration: 4L water\nSleep: 8+ hours\nNutrition: High protein + carbs\nOptional: Massage, stretch'},
+                {day:'Friday Mar 13',type:'Stations',focus:'Hyrox station practice',detail:'Light technique work',specifics:'**HYROX STATION TECHNIQUE**\n\nWarm-up: 10min easy movement\n\n**LIGHT PRACTICE - 2 rounds @ 70% effort:**\n• SkiErg: 500m (technique)\n• Sled Push: 25m @ 130kg\n• Sled Pull: 25m @ 90kg\n• Burpee Broad Jumps: 40m\n• Row: 500m (technique)\n• Farmers Carry: 100m @ 22kg/hand\n• Sandbag Lunges: 50m\n• Wall Balls: 50 reps\n\nRest 3min between rounds\n\nCool-down: 10min walk\n\n**Notes:** Just maintaining feel. Save energy for tomorrow\'s FULL simulation!'},
+                {day:'Saturday Mar 14',type:'Doubles Simulation',focus:'🔥 HYROX DOUBLES SIMULATION #1',detail:'Full simulation - 90% effort',specifics:'**🔥 HYROX DOUBLES SIMULATION #1 WITH TONY 🔥**\n**FIRST FULL HYROX SIMULATION @ 90% EFFORT**\n\nWarmup: Full race warm-up protocol\n• 1.5km progressive run\n• Full dynamic routine\n• 6x100m strides\n• Light station activation\n\n**FULL 8-STATION RACE SIMULATION:**\n\n• SkiErg 1000m: Tony 600m (Target 2:15-2:20), Stuart 400m (Target 1:25-1:30)\n• Run 1km each @ 3:55-4:00/km\n\n• Sled Push 50m: Stuart 30m, Tony 20m\n• Run 1km each @ 3:55-4:00/km\n\n• Sled Pull 50m: Split 25m each\n• Run 1km each @ 3:55-4:00/km\n\n• Burpee BJ 80m: Split 40m each (Target 2:15-2:30 total)\n• Run 1km each @ 3:55-4:00/km\n\n• Row 1000m: Tony 600m (Target 2:05-2:10), Stuart 400m (Target 1:20-1:25)\n• Run 1km each @ 3:55-4:00/km\n\n• Farmers 200m: Stuart 120m, Tony 80m (Target under 2:00 total)\n• Run 1km each @ 3:55-4:00/km\n\n• Sandbag Lunges 100m: Split 50m each (Target 2:30-2:45 total)\n• Run 1km each @ 3:55-4:00/km\n\n• Wall Balls 100: Split 50 each (Target 3:30-3:45 total)\n\n**GOAL TIME: 1:22-1:25 TOTAL**\n• Your combined time should be approaching race target\n\n**POST-SIMULATION DEBRIEF (30min):**\n• Record ALL station times\n• Record ALL run splits\n• How did transitions feel at race pace?\n• Energy management working?\n• Any adjustments needed?\n• Compare to training sessions\n• Pacing strategy confirmation\n• Nutrition/hydration protocol working?\n\n**CRITICAL SESSION:**\n• This is race rehearsal #1\n• 90% effort - near race intensity\n• Film transitions if possible\n• Test race-day fueling\n\n**Duration:** 120-150 mins total (including warmup/debrief)\n\n**YOU AND TONY ARE READY TO EXECUTE! 💪🔥**'},
+                {day:'Sunday Mar 15',type:'Recovery',focus:'Complete rest',detail:'Full recovery day',specifics:'**COMPLETE REST**\n\nHuge day yesterday!\n\nHydration: 4L water\nSleep: 9+ hours\nNutrition: High protein + carbs\nOptional: Ice bath, massage\n\n**Review simulation data:**\n• Analyze all splits with Tony\n• Identify improvements\n• Adjust race plan if needed\n\n**2 weeks to race day!**\n**One more simulation next week!**'}
+            ],
+15: [
+                {day:'Monday Mar 16',type:'Rest',focus:'Complete rest',detail:'POST-SIMULATION RECOVERY',specifics:'**COMPLETE REST**\n\nHuge day yesterday!\n\nHydration: 4L water\nSleep: 9+ hours\nNutrition: High protein + carbs\nOptional: Ice bath, massage\n\n**Review simulation data:**\n• Analyze all splits with Tony\n• Identify improvements\n• Adjust race plan\n\n**2 weeks to race day!**'},
+                {day:'Tuesday Mar 17',type:'Strength',focus:'Final peak power',detail:'Max effort strength',specifics:'Warm-up: 5min bike/row + dynamics\n\n**FINAL PEAK POWER SESSION**\n\nMain Lifts:\n• Back Squat: 3x3 @ 87% 1RM (explosive)\n• Broad Jumps: 5x5 (max power)\n• Sled Push: 4x50m @ 155kg (OVER race weight!), 2min rest\n• Sled Pull: 4x50m @ 110kg, 2min rest\n• Wall Balls: 4x35 @ 9kg race pace\n• Farmers Carry: 4x200m @ 24kg/hand (race distance)\n\nCool-down: 10min\n\n**Notes:** Last heavy session. Over-loading sled to make race weight feel lighter!'},
+                {day:'Wednesday Mar 18',type:'Run',focus:'Speed + stations',detail:'Race pace + power circuit',specifics:'Warm-up: 2km easy + drills\n\n**RACE PACE RUN:**\n• 6x1km @ 3:52/km (10s faster than race pace!)\n• 90s recovery jog\n• HR: 172-182 bpm\n• Building overspeed\n\nCool-down: 1km easy\n\n**Then: POWER CIRCUIT - 3 rounds**\n• SkiErg: 500m max effort\n• Burpee Broad Jumps: 40m\n• Row: 500m max effort\n• Rest: 2min between rounds\n\n**Total:** ~11km\n\n**Notes:** Training slightly faster than race pace so race pace feels comfortable.'},
+                {day:'Thursday Mar 19',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'**COMPLETE REST**\n\nHydration: 3L+ water\nSleep: 8+ hours\n\nMental preparation:\n• Visualize race day\n• Review strategy with Tony\n• Confirm logistics'},
+                {day:'Friday Mar 20',type:'Light Movement',focus:'Pre-simulation activation',detail:'Very light activity',specifics:'**LIGHT ACTIVATION**\n\n• 20min easy bike or walk\n• Light dynamic stretching\n• Mobility work (hips, ankles, shoulders)\n\n**Total:** 30min max\n\n**Notes:** Just staying loose. Final simulation tomorrow!'},
+                {day:'Saturday Mar 21',type:'Doubles Simulation',focus:'🔥 HYROX DOUBLES SIMULATION #2',detail:'FINAL PRACTICE - 95% effort',specifics:'**🔥 HYROX DOUBLES SIMULATION #2 WITH TONY 🔥**\n**FINAL PRACTICE! 95-98% RACE EFFORT**\n\nWarmup: Exact race day protocol\n• 1.5km progressive\n• Full dynamic routine\n• 6x100m strides\n• Station activation\n\n**FULL 8-STATION RACE SIMULATION:**\n\n• SkiErg 1000m: Tony 600m (Target 2:12-2:17), Stuart 400m (Target 1:23-1:28)\n• Run 1km each @ 3:50-3:55/km (RACE PACE)\n\n• Sled Push 50m: Stuart 30m, Tony 20m (RACE EFFORT)\n• Run 1km each @ 3:50-3:55/km\n\n• Sled Pull 50m: Split 25m each (RACE EFFORT)\n• Run 1km each @ 3:50-3:55/km\n\n• Burpee BJ 80m: Split 40m each (Target 2:10-2:25 total)\n• Run 1km each @ 3:50-3:55/km\n\n• Row 1000m: Tony 600m (Target 2:03-2:08), Stuart 400m (Target 1:18-1:23)\n• Run 1km each @ 3:50-3:55/km\n\n• Farmers 200m: Stuart 120m, Tony 80m (Target under 1:55 total)\n• Run 1km each @ 3:50-3:55/km\n\n• Sandbag Lunges 100m: Split 50m each (Target 2:25-2:40 total)\n• Run 1km each @ 3:50-3:55/km\n\n• Wall Balls 100: Split 50 each (Target 3:25-3:40 total)\n\n**GOAL TIME: 1:20-1:22 TOTAL**\n• TARGET RACE PACE\n• This should feel like race day\n\n**FINAL DEBRIEF (30min):**\n• **THIS IS IT - FINAL PRACTICE**\n• Lock in race strategy\n• Perfect transitions\n• Confirm all station splits\n• Energy management spot-on?\n• Record EVERYTHING\n• Mental readiness check\n• Race day logistics confirmed?\n• Nutrition/hydration dialed in?\n• Any final micro-adjustments?\n\n**CRITICAL FINAL SESSION:**\n• 95-98% race effort\n• Race nutrition EXACTLY\n• Race gear EXACTLY\n• Race mindset EXACTLY\n• Communication with Tony perfect\n• Transition precision\n• This is dress rehearsal!\n\n**After this, just taper!**\n\n**Duration:** 120-150 mins total\n\n**YOU\'RE READY! NEXT TIME IS RACE DAY! 💪🔥**'},
+                {day:'Sunday Mar 22',type:'Rest',focus:'Complete rest',detail:'Pre-race week preparation',specifics:'**COMPLETE REST**\n\n**RACE WEEK PREPARATION:**\n\n• Complete rest today\n• Hydration: 3L+ water\n• Sleep: 8+ hours\n• Meal prep for week\n\n**FINAL CHECKS:**\n• Connect with Tony - confirm all logistics\n• Race gear ready?\n• Nutrition plan locked in?\n• Travel/timing confirmed?\n• Mental visualization\n• Review final simulation data\n• Confidence check with Tony\n\n**RACE WEEK STARTS TOMORROW!**\n**ONE WEEK TO RACE DAY! 💪**\n\n**6 DOUBLES SESSIONS COMPLETE:**\n1. Jan 10 - 75% (Learning)\n2. Jan 24 - 85% (Refining)\n3. Feb 7 - 90% (Near race pace)\n4. Feb 21 - 90% (Final practice before HM)\n5. Mar 14 - 90% (First full Hyrox sim)\n6. Mar 21 - 95% (Final dress rehearsal)\n\n**YOU AND TONY ARE READY! 🔥**'}
+            ],
+        16: [
+                {day:'Monday Mar 23',type:'Rest',focus:'Complete rest',detail:'RACE WEEK BEGINS',specifics:'**🔥 RACE WEEK! 🔥**\n**Doubles Hyrox: SUNDAY March 29th**\n**With Tony - Target: Sub 1:20:00**\n\nComplete rest day\nHydration: 3L+ water\nSleep: 8+ hours\nVisualize race success\nReview race strategy\n\n**Your target: ~40:00 per half**'},
+                {day:'Tuesday Mar 24',type:'Run',focus:'Activation shakeout',detail:'3km easy + strides',specifics:'**LIGHT SHAKEOUT**\n\nWarm-up: 5min walk\n\n**Main:** 3km @ 5:30/km easy\n• HR: 130-140 bpm\n• Just moving legs\n\n**Finish:** 6x100m strides\n• Building to 85% effort\n• Feel race pace\n• Feel leg speed\n\nCool-down: 5min walk\n\n**Total:** 20min max\n\n**Notes:** Light and easy. Staying fresh.'},
+                {day:'Wednesday Mar 25',type:'Stations',focus:'Final touch',detail:'Light technique work',specifics:'**FINAL STATION TOUCH**\n\nWarm-up: 10min easy bike\n\n**3 rounds @ 60% effort (LIGHT!):**\n• SkiErg: 250m (technique)\n• Sled Push: 25m @ 102kg (feel the movement)\n• Sled Pull: 25m @ 80kg\n• Wall Balls: 20 reps\n• Rest: 2min between rounds\n\n**Total:** 25min max\n\nCool-down: Stretch\n\n**Notes:** Just maintaining feel. NO FATIGUE. Stay fresh!'},
+                {day:'Thursday Mar 26',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'**COMPLETE REST**\n\nHydration: 4L water\nSleep: 9+ hours\nStay off feet\nMassage if possible\n\n**Connect with Tony:**\n• Confirm race day logistics\n• Meet time/location\n• Warm-up plan\n• Final strategy check\n\n**3 days to race!**'},
+                {day:'Friday Mar 27',type:'Run',focus:'Speed activation',detail:'Short shakeout',specifics:'**SPEED ACTIVATION**\n\n**Morning shakeout:**\n• 2km @ 5:45/km very easy\n• HR: 125-135 bpm\n• 6x100m strides @ 85-90% effort\n• Feel race pace in legs\n\n**Total:** 15min\n\n**Notes:** Last run before race. Feeling leg turnover and speed. Then rest!'},
+                {day:'Saturday Mar 28',type:'Rest',focus:'Complete rest',detail:'DAY BEFORE RACE',specifics:'**DAY BEFORE RACE**\n\n**COMPLETE REST**\n\nMorning:\n• Light 10min walk ONLY\n• Stay off feet otherwise\n• Light stretching/mobility\n\nNutrition:\n• Carb load all day\n• Familiar foods only\n• Hydrate consistently throughout day\n• Avoid fiber/dairy if sensitive\n• Normal-sized meals, not overeating\n\nAfternoon:\n• Connect with Tony\n• Go through race plan together\n• Confirm all logistics\n• Confirm meet time (arrive 90min before start)\n\nEvening:\n• Early dinner (6pm)\n• Lay out ALL race gear:\n  - Race bib + pins\n  - Running shoes (race tested)\n  - Race outfit (race tested)\n  - Watch/GPS fully charged\n  - Water bottle\n  - Any fuel/gels\n  - Chalk for carries (if needed)\n  - Extra socks\n• Set 2-3 alarms\n• Review race plan one final time\n• Bed by 9pm\n\n**Weather check**\n**Facility layout review**\n\n**YOU AND TONY ARE READY! 💪**'},
+                {day:'Sunday Mar 29',type:'RACE',focus:'🔥 DOUBLES HYROX 🔥',detail:'RACE DAY!',specifics:'**🎯 DOUBLES HYROX RACE DAY 🎯**\n**TARGET: SUB 1:20:00 TEAM**\n**YOUR TARGET: ~40:00 PER HALF**\n\n**3 Hours Before Start:**\n• Wake up (adjust for race time)\n• Bathroom routine\n• Breakfast: Oatmeal + banana + honey + coffee\n  (Same as half marathon - tested!)\n• Sip water steadily\n• Stay relaxed and warm\n\n**90min Before Start:**\n• Arrive at venue with Tony\n• Check in, collect bibs\n• Facility walkthrough\n• Locate all 8 stations\n• Find handoff zones\n• Bathroom\n• Stay warm (layers)\n\n**45min Before Start:**\n• Begin warm-up with Tony\n• Progressive run: 1.5km building effort\n• Dynamic drills thoroughly:\n  - Leg swings\n  - High knees\n  - Butt kicks\n  - A-skips\n  - Lunges\n  - Arm circles\n\n**20min Before Start:**\n• 6x100m strides building to race pace\n• Practice explosive movement\n• Light station touches if allowed:\n  - 5 wall balls\n  - 25m sled push (empty)\n  - Feel the movements\n• Final bathroom stop\n• Remove warm-up layers\n• Get to start position\n• STAY WARM until start\n\n**RACE STRATEGY:**\n\n**YOUR FIRST HALF (Stations 1-4):**\n\n**1km Run #1:** 3:55-4:00\n• Controlled start - don\'t blow up\n• Find rhythm quickly\n• HR: 168-178 bpm\n• Smooth and strong\n\n**Station 1 - SkiErg 1000m:** Target 3:30-3:35\n• Strong pull from start\n• Consistent rhythm\n• Don\'t go out too hard\n• Breathe!\n\n**Station 2 - Sled Push 50m:** Target under 30s\n• Explosive but controlled\n• Low and powerful\n• Drive through legs\n• Don\'t hold breath\n\n**Station 3 - Sled Pull 50m:** Target under 35s\n• Hand over hand\n• Strong pulls\n• Use legs!\n• Keep moving\n\n**Station 4 - Burpee Broad Jumps 80m:** Target 2:30-2:45\n• Find rhythm immediately\n• Consistent jumps\n• Don\'t rush, don\'t slow\n• Breathe with each rep\n\n**1km Run #2:** 3:50-3:55\n• Push pace slightly\n• Building to handoff\n• Strong finish to Tony\n\n**HANDOFF TO TONY:**\n• Clear communication\n• Smooth transition\n• Encourage him!\n• Recover actively while Tony works\n\n**WHILE TONY WORKS:**\n• Walk/jog very easy\n• Sip water\n• Stay warm\n• Stay loose\n• Mentally prepare for second half\n• Watch Tony, support him!\n• Get ready for handoff\n\n**HANDOFF FROM TONY:**\n• Be ready and warm\n• Clear communication\n• Smooth transition\n• GO TIME!\n\n**YOUR SECOND HALF (Stations 5-8):**\n\n**1km Run #3:** 3:55-4:00\n• Controlled start to second half\n• Let legs wake up\n• HR: 168-178 bpm\n• Find rhythm again\n\n**Station 5 - Row 1000m:** Target 3:30-3:35\n• Strong consistent pulls\n• Use legs and back\n• Rhythm and power\n• Drive hard\n\n**Station 6 - Farmers Carry 200m:** Target under 2:00\n• Grip it and RIP IT\n• Upright posture\n• Don\'t stop unless you must\n• Quick re-grips if needed\n• Push through grip fatigue\n\n**Station 7 - Sandbag Lunges 100m:** Target 2:30-3:00\n• Stay upright\n• Controlled lunges\n• Breathe with each step\n• Keep moving forward\n• Quad burn is normal!\n\n**Station 8 - Wall Balls 100 reps:** Target 3:30-4:00\n• Consistent rhythm from start\n• 3-4 reps per breath cycle\n• Full depth squat\n• Hit target height\n• Break only if absolutely needed\n• Final station - PUSH!\n\n**1km Run #4 (FINAL):** 3:45-3:55\n• EMPTY THE TANK\n• This is it\n• Everything you have\n• Sprint to finish\n• Leave nothing behind\n• FINISH STRONG!\n\n**TARGET SPLITS SUMMARY:**\n• First Half Total: 19:30-20:30\n• Second Half Total: 19:30-20:30\n• **TEAM TOTAL: SUB 1:20:00** 🎯\n\n**FUELING:**\n• Water available throughout\n• Small sips only\n• No gels needed (short duration)\n• Stay hydrated pre-race\n\n**MENTAL GAME:**\n• You and Tony are a TEAM\n• Trust each other\n• Push through discomfort\n• This is what you trained for\n• All the doubles practices prepared you\n• When it hurts, push harder\n• BELIEVE IN YOURSELVES\n\n**Post-Race:**\n• Keep walking 5-10min (both of you)\n• Collect medals together 🏅\n• Stretch gently\n• Carbs + protein within 30min\n• Hydrate well\n• Ice bath if available\n• Take photos!\n• CELEBRATE WITH TONY! 🎉\n\n**YOU\'VE TRAINED HARD**\n**YOU\'RE READY**\n**GO GET THAT SUB 1:20! 💪🔥**\n\n**STUART & TONY - LET\'S GO!!!**'}
+            ]
+        };
+      let selectedWeek = 1;
+        let expandedDay = null;
+        let completedWorkouts = {};
+        let currentView = 'plan';
+
+        // Load completed workouts from localStorage
+        function loadProgress() {
+            const saved = localStorage.getItem('stuartCompletedWorkouts');
+            if (saved) {
+                completedWorkouts = JSON.parse(saved);
+            }
+        }
+
+        // Save completed workouts to localStorage
+        function saveProgress() {
+            localStorage.setItem('stuartCompletedWorkouts', JSON.stringify(completedWorkouts));
+            updateProgressStats();
+        }
+
+        // Initialize on page load
+        function init() {
+            loadProgress();
+            renderWeekSelector();
+            renderWeekPlan(selectedWeek);
+            updateProgressStats();
+        }
+
+        // Render week selector buttons
+        function renderWeekSelector() {
+            const container = document.getElementById('weekSelector');
+            let html = '';
+            
+            for (let i = 1; i <= 16; i++) {
+                const phase = programPhases[i];
+                html += `
+                    <button class="week-btn ${selectedWeek === i ? 'active' : ''}" 
+                            onclick="selectWeek(${i})"
+                            title="${phase.phase} - ${phase.dates}">
+                        Week ${i}
+                    </button>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Select a week
+        function selectWeek(week) {
+            selectedWeek = week;
+            expandedDay = null;
+            renderWeekSelector();
+            renderWeekPlan(week);
+        }
+
+        // Render week plan
+        function renderWeekPlan(week) {
+            const phase = programPhases[week];
+            const workouts = stuartWeeklyPlans[week];
+            
+            // Render phase info
+            const phaseInfo = document.getElementById('phaseInfo');
+            phaseInfo.innerHTML = `
+                <h3>${phase.phase}</h3>
+                <p><strong>Dates:</strong> ${phase.dates}</p>
+                <p><strong>Focus:</strong> ${phase.focus}</p>
+                <p><strong>Intensity:</strong> ${phase.intensity}</p>
+                <p><strong>Notes:</strong> ${phase.notes}</p>
+            `;
+            
+            // Render workouts
+            const grid = document.getElementById('workoutGrid');
+            let html = '';
+            
+            workouts.forEach((workout, index) => {
+                const dayKey = `week${week}-day${index}`;
+                const isCompleted = completedWorkouts[dayKey] || false;
+                const isExpanded = expandedDay === dayKey;
+                
+                let cardClass = 'workout-header';
+                if (workout.type.toLowerCase().includes('rest')) cardClass += ' rest';
+                else if (workout.type.toLowerCase().includes('strength')) cardClass += ' strength';
+                else if (workout.type.toLowerCase().includes('run') || workout.type.toLowerCase().includes('hyrox')) cardClass += ' run';
+                else if (workout.type.toLowerCase().includes('race') || workout.type.toLowerCase().includes('simulation')) cardClass += ' race';
+                
+                html += `
+                    <div class="workout-card">
+                        <div class="${cardClass}" onclick="toggleDay('${dayKey}')">
+                            <div class="workout-left">
+                                <div class="workout-day">${workout.day}</div>
+                                <div class="workout-type">${workout.type}</div>
+                                <div class="workout-focus">${workout.focus}</div>
+                            </div>
+                            <div class="workout-right">
+                                <button class="complete-btn ${isCompleted ? 'complete' : 'incomplete'}" 
+                                        onclick="toggleComplete(event, '${dayKey}')">
+                                    ${isCompleted ? '✓ Done' : 'Mark Done'}
+                                </button>
+                                <svg class="expand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="${isExpanded ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7'}"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        ${isExpanded ? `<div class="workout-details">${workout.specifics}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        // Toggle day expansion
+        function toggleDay(dayKey) {
+            if (expandedDay === dayKey) {
+                expandedDay = null;
+            } else {
+                expandedDay = dayKey;
+            }
+            renderWeekPlan(selectedWeek);
+        }
+
+        // Toggle workout completion
+        function toggleComplete(event, dayKey) {
+            event.stopPropagation();
+            completedWorkouts[dayKey] = !completedWorkouts[dayKey];
+            saveProgress();
+            renderWeekPlan(selectedWeek);
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            currentView = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide views
+            document.getElementById('plan-view').style.display = tab === 'plan' ? 'block' : 'none';
+            document.getElementById('overview-view').style.display = tab === 'overview' ? 'block' : 'none';
+            document.getElementById('progress-view').style.display = tab === 'progress' ? 'block' : 'none';
+        }
+
+        // Update progress statistics
+        function updateProgressStats() {
+            let totalWorkouts = 0;
+            let completedCount = 0;
+            
+            for (let week = 1; week <= 16; week++) {
+                const workouts = stuartWeeklyPlans[week];
+                totalWorkouts += workouts.length;
+                
+                workouts.forEach((workout, index) => {
+                    const dayKey = `week${week}-day${index}`;
+                    if (completedWorkouts[dayKey]) {
+                        completedCount++;
+                    }
+                });
+            }
+            
+            const percentage = Math.round((completedCount / totalWorkouts) * 100);
+            
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('totalCount').textContent = totalWorkouts;
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressFill').textContent = percentage + '%';
+        }
+
+        // Initialize app when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
